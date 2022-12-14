@@ -35,8 +35,8 @@ public class developer_Handler {
     private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/contributors?anon=0&per_page=100&page=";
 
     @GetMapping("/Get_developer")
-    public List<developer> Get_developer() {
-        return developer_info_repo.findAll();
+    public List<developer> Get_developer(String owner_repo) {
+        return developer_info_repo.findByOwner_repo(owner_repo);
     }
 
     @GetMapping("/Crawler_Insert")

@@ -35,8 +35,8 @@ public class issue_Handler {
     private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/issues?state=all&per_page=100&page=";
 
     @GetMapping("/Get_issue")
-    public List<issue> Get_issue() {
-        return issue_info_repo.findAll();
+    public List<issue> Get_issue(String owner_repo) {
+        return issue_info_repo.findByOwner_repo(owner_repo);
     }
 
     @GetMapping("/Crawler_Insert")

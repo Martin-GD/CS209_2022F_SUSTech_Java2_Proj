@@ -35,8 +35,8 @@ public class commit_Handler {
     private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/commits?per_page=100&page=";
 
     @GetMapping("/Get_commit")
-    public List<commit> Get_commit() {
-        return commit_info_repo.findAll();
+    public List<commit> Get_commit(String owner_repo) {
+        return commit_info_repo.findByOwner_repo(owner_repo);
     }
 
     @GetMapping("/Crawler_Insert")

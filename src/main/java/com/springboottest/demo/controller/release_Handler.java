@@ -35,8 +35,9 @@ public class release_Handler {
     private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/releases?per_page=100&page=";
 
     @GetMapping("/Get_release")
-    public List<release> Get_release() {
-        return release_info_repo.findAll();
+    public List<release> Get_release(String owner_repo) {
+//        String owner_repo = "Fndroid_clash_for_windows_pkg";
+        return release_info_repo.findByOwner_repo(owner_repo);
     }
 
     @GetMapping("/Crawler_Insert")
