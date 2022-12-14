@@ -39,6 +39,16 @@ public class developer_Handler {
         return developer_info_repo.findByOwner_repo(owner_repo);
     }
 
+    @GetMapping("/Get_developer_number")
+    public int Get_developer_number(String owner_repo) {
+        return developer_info_repo.findNumberOfDevelopers(owner_repo);
+    }
+
+    @GetMapping("/Get_developer_top5")
+    public List<developer> Get_developer_top5(String owner_repo) {
+        return developer_info_repo.findTop5(owner_repo);
+    }
+
     @GetMapping("/Crawler_Insert")
     public String Crawl_Insert(String owner_repo) throws IOException {
 //        issue_info_repo.deleteAll();

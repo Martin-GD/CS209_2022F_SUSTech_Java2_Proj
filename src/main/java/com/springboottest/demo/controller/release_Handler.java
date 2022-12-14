@@ -36,8 +36,24 @@ public class release_Handler {
 
     @GetMapping("/Get_release")
     public List<release> Get_release(String owner_repo) {
-//        String owner_repo = "Fndroid_clash_for_windows_pkg";
         return release_info_repo.findByOwner_repo(owner_repo);
+    }
+
+    @GetMapping("/Get_release_number")
+    public int Get_release_number(String owner_repo) {
+        return release_info_repo.findNumByOwner_repo(owner_repo);
+    }
+
+    @GetMapping("/Get_commit_number_in_release")
+    public List<commit_number_in_release> Get_commit_number_in_release(String owner_repo) {
+        List<commit_number_in_release> res = new ArrayList<>();
+        List<release> list = release_info_repo.findByOwner_repo(owner_repo);
+        for (int i = 0; i < list.size() - 1; i++) {
+            res.add(new commit_number_in_release(list.get(i).getName(),
+                    list.get(i + 1).getName(), release_info_repo
+                    .findCommitNumInReleases(owner_repo, list.get(i).getPublished_at(), list.get(i + 1).getPublished_at())));
+        }
+        return res;
     }
 
     @GetMapping("/Crawler_Insert")
@@ -45,9 +61,9 @@ public class release_Handler {
 //        issue_info_repo.deleteAll();
         List<release> list = new ArrayList<>();
         int cnt = 1;
-        String url = Data_Crawl_URL+cnt;
+        String url = Data_Crawl_URL + cnt;
 
-        String json_String_Content = HttpUtil.createGet(url).header("Authorization",token).execute().body();
+        String json_String_Content = HttpUtil.createGet(url).header("Authorization", token).execute().body();
 //        String json_String_Content = Jsoup.connect(Data_Crawl_URL).ignoreContentType(true).get().text();
         do {
             JsonParser parser = new JsonParser();
@@ -57,16 +73,16 @@ public class release_Handler {
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject1 = jsonElement.getAsJsonObject();
                 list.add(new release(owner_repo, jsonObject1.get("id").getAsString(),
-                        ((JsonObject)jsonObject1.get("author")).get("login").getAsString(),
+                        ((JsonObject) jsonObject1.get("author")).get("login").getAsString(),
                         jsonObject1.get("name").getAsString(),
                         jsonObject1.get("created_at").getAsString(),
                         jsonObject1.get("published_at").getAsString()
-                        ));
+                ));
             }
             cnt++;
-            url = Data_Crawl_URL+cnt;
-            json_String_Content = HttpUtil.createGet(url).header("Authorization",token).execute().body();
-        }while (!json_String_Content.equals("[\n\n]\n"));
+            url = Data_Crawl_URL + cnt;
+            json_String_Content = HttpUtil.createGet(url).header("Authorization", token).execute().body();
+        } while (!json_String_Content.equals("[\n\n]\n"));
 
 
         release_info_repo.saveAll(list);

@@ -39,6 +39,43 @@ public class issue_Handler {
         return issue_info_repo.findByOwner_repo(owner_repo);
     }
 
+    @GetMapping("/Get_issue_number_open")
+    public int Get_issue_number_open(String owner_repo) {
+        return issue_info_repo.findNumByState(owner_repo,"open");
+    }
+
+    @GetMapping("/Get_issue_number_closed")
+    public int Get_issue_number_closed(String owner_repo) {
+        return issue_info_repo.findNumByState(owner_repo,"closed");
+    }
+
+    @GetMapping("/Get_issue_time_statistic")
+    public double[] Get_issue_time_statistic(String owner_repo) {
+        List<issue> list =  issue_info_repo.findByOwner_repoAndState(owner_repo,"closed");
+        double[] time = new double[list.size()];
+        double sum = 0;
+        double min = Double.MAX_VALUE;
+        double max = -1;
+        for (int i = 0; i < list.size(); i++) {
+            issue t = list.get(i);
+            time[i] = (double) (t.getClosed_at().getTime()-t.getCreated_at().getTime())/60/1000;
+            if (time[i]>max)
+                max = time[i];
+            if (time[i]<min)
+                min = time[i];
+            sum += time[i];
+        }
+        double average = sum/list.size();
+        double range = max-min;
+        double variance = 0;
+        for (int i = 0; i < list.size(); i++) {
+            variance += (time[i]-average)*(time[i]-average);
+        }
+        variance = variance/list.size();
+        return new double[]{average, range, variance};
+    }
+
+
     @GetMapping("/Crawler_Insert")
     public String Crawl_Insert(String owner_repo) throws IOException {
 //        issue_info_repo.deleteAll();
