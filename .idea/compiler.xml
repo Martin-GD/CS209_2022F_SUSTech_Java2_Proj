@@ -8,11 +8,11 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Spring-Project" />
         <module name="demo" />
+        <module name="SUSTech_CS209_2022F_Proj" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="springproject" target="1.8" />
-      <module name="SUSTech_CS209_2022F_Proj" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
