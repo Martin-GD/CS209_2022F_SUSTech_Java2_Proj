@@ -1,4 +1,4 @@
-package com.springboottest.demo.controller.Topic_Handler;
+package com.springboottest.demo.controller;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,30 +19,29 @@ import java.util.List;
 //token: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
 
 @RestController
-@RequestMapping("/Topic_Info/Collectives_Info")
+@RequestMapping("/repo_Info/commit")
 @CrossOrigin
-public class issue_Handler {
+public class commit_Handler {
 
     @Autowired
-    private issue_info_Repo issue_info_repo;
+    private commit_info_Repo commit_info_repo;
 
 
     private String token = "CS209A_Proj1 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";
 
     @SuppressWarnings("all")
-    private final String topic_name = "issue";
+    private final String topic_name = "commit";
     @SuppressWarnings("all")
-    private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/issues?state=all&per_page=100&page=";
+    private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/commits?per_page=100&page=";
 
-    @GetMapping("/Get_issue")
-    public List<issue> Get_issue() {
-        return issue_info_repo.findAll();
+    @GetMapping("/Get_commit")
+    public List<commit> Get_commit() {
+        return commit_info_repo.findAll();
     }
 
     @GetMapping("/Crawler_Insert")
     public String Crawl_Insert(String owner_repo) throws IOException {
-        issue_info_repo.deleteAll();
-        List<issue> list = new ArrayList<>();
+        List<commit> list = new ArrayList<>();
         int cnt = 1;
         String url = Data_Crawl_URL+cnt;
 
@@ -56,18 +55,18 @@ public class issue_Handler {
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject1 = jsonElement.getAsJsonObject();
 
-                JsonElement closed = jsonObject1.get("closed_at");
-                list.add(new issue(jsonObject1.get("number").getAsInt(), owner_repo,
-                        jsonObject1.get("id").getAsString(),
-                        ((JsonObject)jsonObject1.get("user")).get("login").getAsString(),
-                        jsonObject1.get("state").getAsString(),
-                        jsonObject1.get("created_at").getAsString(),
-                        jsonObject1.get("updated_at").getAsString(),
-                        closed.isJsonNull() ? " ":closed.getAsString(),
-//                    jsonObject1.get("closed_at") == null ? " ":jsonObject1.get("closed_at").getAsString(),
-//                    jsonObject1.get("closed_at").getAsString(),
-                        jsonObject1.get("title").getAsString(),
-                        jsonObject1.get("comments").getAsString()));
+                JsonObject commit = ((JsonObject)jsonObject1.get("commit"));
+                JsonObject author = ((JsonObject)commit.get("author"));
+                JsonElement messageElement = commit.get("message");
+                String message = "";
+                if (messageElement.isJsonNull())
+                    message="";
+                else message = messageElement.getAsString();
+                list.add(new commit(owner_repo,
+                        jsonObject1.get("sha").getAsString(),
+                        author.get("name").getAsString(),
+                        author.get("date").getAsString(),
+                        message));
             }
             cnt++;
             url = Data_Crawl_URL+cnt;
@@ -75,7 +74,7 @@ public class issue_Handler {
         }while (!json_String_Content.equals("[\n\n]\n"));
 
 
-        issue_info_repo.saveAll(list);
+        commit_info_repo.saveAll(list);
         return "success";
     }
 }
