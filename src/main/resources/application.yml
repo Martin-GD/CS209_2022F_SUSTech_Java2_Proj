@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://10.26.142.228:5432/cs209
+    username: checker
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8181
