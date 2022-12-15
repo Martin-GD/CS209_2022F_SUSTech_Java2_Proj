@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 //token: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
@@ -32,7 +33,13 @@ public class issue_Handler {
     @SuppressWarnings("all")
     private final String topic_name = "issue";
     @SuppressWarnings("all")
-    private final String Data_Crawl_URL = "https://api.github.com/repos/Fndroid/clash_for_windows_pkg/issues?state=all&per_page=100&page=";
+    private String Template = "https://api.github.com/repos/{0}/{1}/issues?state=all&per_page=100&page=";
+    private String Data_Crawl_URL = "";
+
+    @GetMapping("/setData_Crawl_URL")
+    public void setData_Crawl_URL(String owner, String repo){
+        Data_Crawl_URL = MessageFormat.format(Template,owner,repo);
+    }
 
     @GetMapping("/Get_issue")
     public List<issue> Get_issue(String owner_repo) {
