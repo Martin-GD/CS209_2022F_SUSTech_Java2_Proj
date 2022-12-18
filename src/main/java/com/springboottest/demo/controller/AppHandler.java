@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +22,9 @@ import java.util.List;
 @CrossOrigin
 public class AppHandler {
 
-    private commit_Handler commit_handler = new commit_Handler();
-    private developer_Handler developer_handler = new developer_Handler();
-    private issue_Handler issue_handler = new issue_Handler();
-    private release_Handler release_handler = new release_Handler();
-
-
+    private String Template = "https://api.github.com/users/{0}";
+    private String Data_Crawl_URL = "";
+    private String token = "CS209A_Proj1 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";
     @Autowired
     private repo_contents_Repo repo_contents_repo;
 
@@ -35,28 +33,30 @@ public class AppHandler {
         return repo_contents_repo.findAll();
     }
 
-    @GetMapping("/Crawler_All_Info")
+    @GetMapping("/Crawler_RepoOwner_Info")
     public String Crawler_All_Info(String owner, String repo) {
-        String pri_key = owner+"_"+repo;
-//        try {
-//
-//            commit_handler.setData_Crawl_URL(owner,repo);
-//            commit_handler.Crawl_Insert(pri_key);
-//            developer_handler.setData_Crawl_URL(owner,repo);
-//            developer_handler.Crawl_Insert(pri_key);
-//            issue_handler.setData_Crawl_URL(owner, repo);
-//            issue_handler.Crawl_Insert(pri_key);
-//            release_handler.setData_Crawl_URL(owner, repo);
-//            release_handler.Crawl_Insert(pri_key);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return "failed";
-//        }
-        repo_contents repo_new_con = new repo_contents(pri_key,owner,repo);
-        repo_contents_repo.save(repo_new_con);
+        String pri_key = owner + "_" + repo;
+        List<repo_contents> list = new ArrayList<>();
+        Data_Crawl_URL = MessageFormat.format(Template, owner);
+        String json_String_Content = HttpUtil.createGet(Data_Crawl_URL).header("Authorization", token).execute().body();
+
+        JsonParser parser = new JsonParser();
+        JsonElement element = parser.parse(json_String_Content);
+        JsonArray jsonArray = element.getAsJsonArray();
+
+        for (JsonElement jsonElement : jsonArray) {
+            JsonObject jsonObject1 = jsonElement.getAsJsonObject();
+
+            list.add(new repo_contents(owner,repo,
+                    jsonObject1.get("following").getAsInt(),
+                    jsonObject1.get("followers").getAsInt(),
+                    jsonObject1.get("public_repos").getAsInt()
+                    ));
+        }
+
+        repo_contents_repo.saveAll(list);
         return "success";
     }
-
 
 
 }
