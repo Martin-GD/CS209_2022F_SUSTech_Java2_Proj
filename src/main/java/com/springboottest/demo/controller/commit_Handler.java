@@ -47,6 +47,21 @@ public class commit_Handler {
         return commit_info_repo.findByOwner_repo(owner_repo);
     }
 
+    @GetMapping("/Get_commitNum")
+    public int Get_commitNum(String owner_repo) {
+        return commit_info_repo.findNumByOwner_repo(owner_repo);
+    }
+
+    @GetMapping("/Get_commit_time_distribution")
+    public int[] Get_commit_time_distribution(String owner_repo) {
+        int[] res = new int[3];
+        res[0] = commit_info_repo.findMorningNum(owner_repo);
+        res[1] = commit_info_repo.findAfternoonNum(owner_repo);
+        res[2] = commit_info_repo.findNightNum(owner_repo);
+        return res;
+    }
+
+
     @GetMapping("/Crawler_Insert")
     public String Crawl_Insert(String owner_repo) throws IOException {
         List<commit> list = new ArrayList<>();

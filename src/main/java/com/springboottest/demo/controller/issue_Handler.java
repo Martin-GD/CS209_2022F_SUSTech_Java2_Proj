@@ -101,6 +101,7 @@ public class issue_Handler {
                 JsonObject jsonObject1 = jsonElement.getAsJsonObject();
 
                 JsonElement closed = jsonObject1.get("closed_at");
+                JsonElement body = jsonObject1.get("body");
                 list.add(new issue(jsonObject1.get("number").getAsInt(), owner_repo,
                         jsonObject1.get("id").getAsString(),
                         ((JsonObject)jsonObject1.get("user")).get("login").getAsString(),
@@ -111,7 +112,8 @@ public class issue_Handler {
 //                    jsonObject1.get("closed_at") == null ? " ":jsonObject1.get("closed_at").getAsString(),
 //                    jsonObject1.get("closed_at").getAsString(),
                         jsonObject1.get("title").getAsString(),
-                        jsonObject1.get("comments").getAsString()));
+                        jsonObject1.get("comments").getAsString(),
+                        body.isJsonNull() ? " ":body.getAsString()));
             }
             cnt++;
             url = Data_Crawl_URL+cnt;

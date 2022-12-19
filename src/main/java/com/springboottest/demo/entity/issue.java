@@ -26,12 +26,12 @@ public class issue {
     private Timestamp closed_at;
     private String title;
     private String comment;
-    private String description;
+    private String body;
 
     public issue(int number,String owner_repo, String id,
                  String user_login, String state,
                  String created_at, String updated_at, String closed_at,
-                 String title, String comment) {
+                 String title, String comment, String body) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.pri_key = owner_repo+number;
         this.number = number;
@@ -55,7 +55,7 @@ public class issue {
         this.closed_at = close;
         this.title = title;
         this.comment = comment;
-//        this.description = description;
+        this.body = body;
     }
 
     public issue(){}
