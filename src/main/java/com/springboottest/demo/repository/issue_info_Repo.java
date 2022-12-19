@@ -15,4 +15,11 @@ public interface issue_info_Repo extends JpaRepository<issue,String> {
 
     @Query(value = "select count(*) from issue where owner_repo = ?1 and state=?2",nativeQuery = true)
     int findNumByState(String owner_repo, String state);
+
+    @Query(value = "select * from issue where (issue.body like  CONCAT('%',?2,'%') or issue.title like CONCAT('%',?2,'%')) and owner_repo = ?1",nativeQuery = true)
+    List<issue> searchByTitleAndBody(String owner_repo, String keyword );
+
+
+
+
 }

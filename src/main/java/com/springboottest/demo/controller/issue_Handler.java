@@ -27,7 +27,6 @@ public class issue_Handler {
     @Autowired
     private issue_info_Repo issue_info_repo;
 
-
     private String token = "CS209A_Proj1 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";
 
     @SuppressWarnings("all")
@@ -54,6 +53,11 @@ public class issue_Handler {
     @GetMapping("/Get_issue_number_closed")
     public int Get_issue_number_closed(String owner_repo) {
         return issue_info_repo.findNumByState(owner_repo,"closed");
+    }
+
+    @GetMapping("/Search_issue_by_keyword")
+    public List<issue> Search_issue_by_keyword(String owner_repo, String keyword) {
+        return issue_info_repo.searchByTitleAndBody(owner_repo, keyword);
     }
 
     @GetMapping("/Get_issue_time_statistic")
