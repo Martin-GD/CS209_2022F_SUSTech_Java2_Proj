@@ -19,32 +19,38 @@
                 <el-form-item label="Id: ">
                   <span>{{ props.row.id }}</span>
                 </el-form-item>
-                <el-form-item label="Owner: ">
-                  <span>{{ props.row.owner }}</span>
-                </el-form-item>
                 <el-form-item label="Title: ">
                   <span>{{ props.row.title }}</span>
                 </el-form-item>
                 <el-form-item label="User: ">
-                  <span>{{ props.row.user }}</span>
+                  <span>{{ props.row.user_login }}</span>
+                </el-form-item>
+                <el-form-item label="Number: ">
+                  <span>{{ props.row.number }}</span>
+                </el-form-item>
+                <el-form-item label="Create Time: ">
+                  <span>{{ props.row.created_at }}</span>
+                </el-form-item>
+                <el-form-item label="Last Update Time: ">
+                  <span>{{ props.row.update_at }}</span>
                 </el-form-item>
                 <el-form-item label="State: ">
                   <span>{{ props.row.state }}</span>
                 </el-form-item>
-                <el-form-item label="Create Time: ">
-                  <span>{{ props.row.createAt }}</span>
-                </el-form-item>
-                <el-form-item label="Last Update Time: ">
-                  <span>{{ props.row.lastUpdateAt }}</span>
-                </el-form-item>
                 <el-form-item label="Close Time: ">
-                  <span>{{ props.row.closedAt }}</span>
+                  <span>{{ props.row.closed_at }}</span>
                 </el-form-item>
                 <el-form-item label="Comment: ">
                   <span>{{ props.row.comment }}</span>
                 </el-form-item>
                 <el-form-item label="Description: ">
                   <span>{{ props.row.description }}</span>
+                </el-form-item>
+                <el-form-item label="Owner_Repo: ">
+                  <span>{{ props.row.owner_repo }}</span>
+                </el-form-item>
+                <el-form-item label="Primary Key: ">
+                  <span>{{ props.row.owner_repo }}</span>
                 </el-form-item>
               </el-form>
             </template>
@@ -67,39 +73,26 @@ export default {
   data () {
     return {
       activeName: '1',
-      open: 20,
-      close: 7,
+      open: 0,
+      close: 0,
       expands: [],
       issues: [
         {
-          owner: 'aaa',
+          closed_at: '2022-12-8',
+          comment: '2',
+          created_at: '2022-11-5',
+          description: '所以今天中午吃什么呢?',
           id: 1,
+          number: 1500,
+          owner_repo: 'hhh',
+          pri_key: 'hhh2',
+          state: 'closed',
           title: '中午吃饭了吗?',
-          user: 'bbb',
-          state: 'close',
-          createAt: '2022-11-5',
-          lastUpdateAt: '2022-12-5',
-          closedAt: '2022-12-8',
-          comment: '今天中午吃饭了吗?',
-          description: '所以今天中午吃什么呢?'
-        },
-        {
-          owner: 'bbb',
-          id: 2,
-          title: '晚上吃饭了吗?',
-          user: 'bbb',
-          state: 'close',
-          createAt: '2022-11-5',
-          lastUpdateAt: '2022-12-5',
-          closedAt: '2022-12-8',
-          comment: '今天晚上吃饭了吗?',
-          description: '所以今天晚上吃什么呢?'
+          update_at: '2022-12-5',
+          user_login: 'bbb'
         }
       ]
     }
-  },
-  mounted () {
-    this.getIssue()
   },
   methods: {
     clickRowHandle (row, column, event) {
@@ -109,11 +102,25 @@ export default {
         this.expands.push(row.id)
       }
     },
-    getIssue () {
-      // const _this = this
-      axios.get('http://10.26.142.228:8181/repo_info/').then(res => {
-        console.log(res.data)
-        // _this.issues = res.data
+    readData () {
+      let url = `http://localhost:8181/repo_Info/issue/Get_issue_number_open?owner_repo=${this.owner}_${this.repo}`
+      axios.get(url).then(res => {
+        this.open = res.data
+      })
+      url = `http://localhost:8181/repo_Info/issue/Get_issue_number_closed?owner_repo=${this.owner}_${this.repo}`
+      axios.get(url).then(res => {
+        this.close = res.data
+      })
+      url = `http://localhost:8181/repo_Info/issue/Get_issue?owner_repo=${this.owner}_${this.repo}`
+      this.issues = []
+      axios.get(url).then(res => {
+        if (res.data.length > 12) {
+          for (let i = 0; i < 12; i++) {
+            this.issues.push(res.data[i])
+          }
+        } else {
+          this.issues = res.data
+        }
       })
     }
   }
