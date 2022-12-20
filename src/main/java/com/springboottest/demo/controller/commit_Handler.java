@@ -24,86 +24,86 @@ import java.util.List;
 @CrossOrigin
 public class commit_Handler {
 
-    @Autowired
-    private commit_info_Repo commit_info_repo;
+  @Autowired
+  private commit_info_Repo commit_info_repo;
 
 
-//    private String token = "CS209A_Proj1 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";
-    private String token = "token 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";
+  //    private String token = "CS209A_Proj1 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";
+  private String token = "token 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";
 
 //    private String token = "cs209 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";
 
-    @SuppressWarnings("all")
-    private final String topic_name = "commit";
-    @SuppressWarnings("all")
-    private String Data_Crawl_URL = "";
-    private String Template = "https://api.github.com/repos/{0}/{1}/commits?per_page=100&page=";
+  @SuppressWarnings("all")
+  private final String topic_name = "commit";
+  @SuppressWarnings("all")
+  private String Data_Crawl_URL = "";
+  private String Template = "https://api.github.com/repos/{0}/{1}/commits?per_page=100&page=";
 
 
-    @GetMapping("/setData_Crawl_URL")
-    public void setData_Crawl_URL(String owner, String repo){
-        Data_Crawl_URL = MessageFormat.format(Template,owner,repo);
-    }
+  @GetMapping("/setData_Crawl_URL")
+  public void setData_Crawl_URL(String owner, String repo) {
+    Data_Crawl_URL = MessageFormat.format(Template, owner, repo);
+  }
 
-    @GetMapping("/Get_commit")
-    public List<commit> Get_commit(String owner_repo) {
-        return commit_info_repo.findByOwner_repo(owner_repo);
-    }
+  @GetMapping("/Get_commit")
+  public List<commit> Get_commit(String owner_repo) {
+    return commit_info_repo.findByOwner_repo(owner_repo);
+  }
 
-    @GetMapping("/Get_commitNum")
-    public int Get_commitNum(String owner_repo) {
-        return commit_info_repo.findNumByOwner_repo(owner_repo);
-    }
+  @GetMapping("/Get_commitNum")
+  public int Get_commitNum(String owner_repo) {
+    return commit_info_repo.findNumByOwner_repo(owner_repo);
+  }
 
-    @GetMapping("/Get_commit_time_distribution")
-    public int[] Get_commit_time_distribution(String owner_repo) {
-        int[] res = new int[3];
-        res[0] = commit_info_repo.findMorningNum(owner_repo);
-        res[1] = commit_info_repo.findAfternoonNum(owner_repo);
-        res[2] = commit_info_repo.findNightNum(owner_repo);
-        return res;
-    }
+  @GetMapping("/Get_commit_time_distribution")
+  public int[] Get_commit_time_distribution(String owner_repo) {
+    int[] res = new int[3];
+    res[0] = commit_info_repo.findMorningNum(owner_repo);
+    res[1] = commit_info_repo.findAfternoonNum(owner_repo);
+    res[2] = commit_info_repo.findNightNum(owner_repo);
+    return res;
+  }
 
 
-    @GetMapping("/Crawler_Insert")
-    public String Crawl_Insert(String owner, String repo) throws IOException {
-        String owner_repo = owner+"_"+repo;
-        Data_Crawl_URL = MessageFormat.format(Template,owner,repo);
-        List<commit> list = new ArrayList<>();
-        int cnt = 1;
-        String url = Data_Crawl_URL+cnt;
+  @GetMapping("/Crawler_Insert")
+  public String Crawl_Insert(String owner, String repo) throws IOException {
+    String owner_repo = owner + "_" + repo;
+    Data_Crawl_URL = MessageFormat.format(Template, owner, repo);
+    List<commit> list = new ArrayList<>();
+    int cnt = 1;
+    String url = Data_Crawl_URL + cnt;
 
-        String json_String_Content = HttpUtil.createGet(url).header("Authorization",token).execute().body();
+    String json_String_Content = HttpUtil.createGet(url).header("Authorization", token).execute().body();
 //        String json_String_Content = Jsoup.connect(Data_Crawl_URL).ignoreContentType(true).get().text();
-        do {
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(json_String_Content);
-            JsonArray jsonArray = element.getAsJsonArray();
+    do {
+      JsonParser parser = new JsonParser();
+      JsonElement element = parser.parse(json_String_Content);
+      JsonArray jsonArray = element.getAsJsonArray();
 
-            for (JsonElement jsonElement : jsonArray) {
-                JsonObject jsonObject1 = jsonElement.getAsJsonObject();
+      for (JsonElement jsonElement : jsonArray) {
+        JsonObject jsonObject1 = jsonElement.getAsJsonObject();
 
-                JsonObject commit = ((JsonObject)jsonObject1.get("commit"));
-                JsonObject author = ((JsonObject)commit.get("author"));
-                JsonElement messageElement = commit.get("message");
-                String message = "";
-                if (messageElement.isJsonNull())
-                    message="";
-                else message = messageElement.getAsString();
-                list.add(new commit(owner_repo,
-                        jsonObject1.get("sha").getAsString(),
-                        author.get("name").getAsString(),
-                        author.get("date").getAsString(),
-                        message));
-            }
-            cnt++;
-            url = Data_Crawl_URL+cnt;
-            json_String_Content = HttpUtil.createGet(url).header("Authorization",token).execute().body();
-        }while (!json_String_Content.equals("[\n\n]\n"));
+        JsonObject commit = ((JsonObject) jsonObject1.get("commit"));
+        JsonObject author = ((JsonObject) commit.get("author"));
+        JsonElement messageElement = commit.get("message");
+        String message = "";
+        if (messageElement.isJsonNull())
+          message = "";
+        else message = messageElement.getAsString();
+        list.add(new commit(owner_repo,
+            jsonObject1.get("sha").getAsString(),
+            author.get("name").getAsString(),
+            author.get("date").getAsString(),
+            message));
+      }
+      cnt++;
+      url = Data_Crawl_URL + cnt;
+      json_String_Content = HttpUtil.createGet(url).header("Authorization", token).execute().body();
+    } while (!json_String_Content.equals("[\n\n]\n"));
 
 
-        commit_info_repo.saveAll(list);
-        return "success";
-    }
+    commit_info_repo.saveAll(list);
+    return "success";
+  }
 
 }
