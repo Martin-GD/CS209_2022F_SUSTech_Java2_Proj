@@ -6,11 +6,11 @@ import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan("com.springboottest.demo.*")
 @SpringBootApplication
-public class  SpringboottestApplication {
+public class SpringboottestApplication {
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        SpringApplication.run(SpringboottestApplication.class, args);
-    }
+    SpringApplication.run(SpringboottestApplication.class, args);
+  }
 
 }
