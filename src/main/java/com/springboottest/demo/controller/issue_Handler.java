@@ -90,8 +90,10 @@ public class issue_Handler {
 
 
     @GetMapping("/Crawler_Insert")
-    public String Crawl_Insert(String owner_repo) throws IOException {
+    public String Crawl_Insert(String owner, String repo) throws IOException {
 //        issue_info_repo.deleteAll();
+        String owner_repo = owner+"_"+repo;
+        Data_Crawl_URL = MessageFormat.format(Template,owner,repo);
         List<issue> list = new ArrayList<>();
         int cnt = 1;
         String url = Data_Crawl_URL+cnt;

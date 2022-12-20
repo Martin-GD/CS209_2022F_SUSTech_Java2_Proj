@@ -66,7 +66,9 @@ public class commit_Handler {
 
 
     @GetMapping("/Crawler_Insert")
-    public String Crawl_Insert(String owner_repo) throws IOException {
+    public String Crawl_Insert(String owner, String repo) throws IOException {
+        String owner_repo = owner+"_"+repo;
+        Data_Crawl_URL = MessageFormat.format(Template,owner,repo);
         List<commit> list = new ArrayList<>();
         int cnt = 1;
         String url = Data_Crawl_URL+cnt;
