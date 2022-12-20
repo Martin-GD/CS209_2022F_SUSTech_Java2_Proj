@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header style="display: flex; margin-left: 100px; margin-top: 50px">
-      <span style="font-size: 35px; font-weight: bold">Total Release Count: {{ this.totalCount }}</span>
+      <span style="font-size: 35px; font-weight: bold; background-color: #a0cfff; border-radius: 15px; width: 500px; height: 40px">Total Release Count: {{ this.totalCount }}</span>
     </el-header>
     <div style="display: flex; margin-top: 50px">
       <h2 style="margin-left: 150px">Release and commits</h2>
@@ -79,13 +79,14 @@ export default {
         ]
       }
       option.series[0].data = this.releases
+      console.log(option.series[0].data)
       release.setOption(option)
     },
     setCommit () {
       let commit = this.$echarts.init(document.getElementById('commit'))
       let dataAxis = []
       let data = []
-      let yMax = 20
+      let yMax = 30
       let dataShadow = []
       for (let i = 0; i < this.commits.length; i++) {
         dataAxis.push(this.commits[i].time)
@@ -93,10 +94,6 @@ export default {
         dataShadow.push(yMax)
       }
       let option = {
-        // title: {
-        //   text: 'Commits',
-        //   subtext: 'Commit Distribution'
-        // },
         xAxis: {
           data: dataAxis,
           axisLabel: {
@@ -179,20 +176,21 @@ export default {
     },
     readData () {
       let url = `http://localhost:8181/repo_Info/release/Get_release_number?owner_repo=${this.owner}_${this.repo}`
+      this.totalCount = 0
       axios.get(url).then(res => {
         this.totalCount = res.data
       })
       url = `http://localhost:8181/repo_Info/release/Get_commit_number_in_release?owner_repo=${this.owner}_${this.repo}`
       this.releases = []
       axios.get(url).then(res => {
-        console.log(res.data.length)
         if (res.data.length > 0) {
-          for (let i = 0; i < 3; i++) {
+          for (let i = 0; i < res.data.length; i++) {
             let tmp = {name: '', value: 0}
             tmp.name = res.data[i].now_release
             tmp.value = res.data[i].cnt
-            console.log(tmp)
-            this.releases.push(tmp)
+            if (tmp.value > 0) {
+              this.releases.push(tmp)
+            }
           }
           console.log(this.releases)
           this.setRelease()
@@ -202,7 +200,18 @@ export default {
           this.setRelease()
         }
       })
-      this.setCommit()
+
+      url = `http://localhost:8181/repo_Info/commit/Get_commit_time_distribution?owner_repo=${this.owner}_${this.repo}`
+      this.commits = []
+      axios.get(url).then(res => {
+        let temp = {time: '0:00-8:00', count: res.data[0]}
+        this.commits.push(temp)
+        temp = {time: '8:00-16:00', count: res.data[1]}
+        this.commits.push(temp)
+        temp = {time: '16:00-24:00', count: res.data[2]}
+        this.commits.push(temp)
+        this.setCommit()
+      })
     }
   }
 }

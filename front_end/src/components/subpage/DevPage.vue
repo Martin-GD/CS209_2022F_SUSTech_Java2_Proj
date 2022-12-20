@@ -1,7 +1,9 @@
 <template>
   <el-container>
-    <el-header style="display: flex; margin-left: 20px">
-      <h2>Developers Count: {{ this.totalCount }}</h2>
+    <el-header style="display: flex;">
+<!--      <h2>Developers Count: {{ this.totalCount }}</h2>-->
+<!--      <el-tag style="font-size: 38px; height: 40px; margin-left: 85px">Developers Count: {{ this.totalCount }}</el-tag>-->
+      <span style="font-size: 35px; font-weight: bold; background-color: #a0cfff; border-radius: 15px; margin-left: 85px; width: 400px; height: 40px">Developers Count: {{ this.totalCount }}</span>
     </el-header>
     <div style="display: flex">
       <item-page style="background-color: #d9ecff;border: aliceblue 10px;border-radius: 20px; margin-left: 100px">
@@ -15,10 +17,10 @@
                 <el-avatar :size="150" :src="imageBaseUrl+owner" style="left: 10px"/>
               </el-aside>
               <el-main style="padding-left: 100px; margin-top: -20px">
-                <h2 style="display: flex;">name: {{owner}}</h2>
-                <h2 style="display: flex; margin-top: 10px">starts: 5</h2>
-                <h2 style="display: flex; margin-top: 10px">flower: 3</h2>
-                <h2 style="display: flex; margin-top: 10px">flowing: 6</h2>
+                <h2 style="display: flex;">name: {{ owner }}</h2>
+                <h2 style="display: flex; margin-top: 10px">repos: {{ repos }}</h2>
+                <h2 style="display: flex; margin-top: 10px">follower: {{ followers }}</h2>
+                <h2 style="display: flex; margin-top: 10px">following: {{ following }}</h2>
               </el-main>
             </el-container>
           </el-main>
@@ -70,6 +72,9 @@ export default {
     return {
       repo: '',
       owner: '',
+      repos: 0,
+      followers: 0,
+      following: 0,
       activeName: '1',
       imageBaseUrl: 'https://avatars.githubusercontent.com/',
       imageUrl: '',
@@ -93,7 +98,7 @@ export default {
     },
     readData () {
       this.developers = []
-      let url = `http://localhost:8181/repo_Info/developer/Get_developer?owner_repo=${this.owner}_${this.repo}`
+      let url = `http://localhost:8181/repo_Info/developer/Get_developer_top5?owner_repo=${this.owner}_${this.repo}`
       axios.get(url).then(res => {
         for (let i = 0; i < res.data.length; i++) {
           let tmpData = res.data[i]
@@ -115,6 +120,7 @@ export default {
         this.totalCount = res.data
       })
       url = `http://localhost:8181/repo_Info/developer/Get_developer_top5?owner_repo=${this.owner}_${this.repo}`
+      console.log(url)
       axios.get(url).then(res => {
         let active = this.$refs.active
         active.yData = []
@@ -125,6 +131,17 @@ export default {
           active.xData.push(tmpData.contributions)
         }
         active.setActive()
+      })
+      url = `http://localhost:8181/GetAllRepo`
+      axios.get(url).then(res => {
+        for (let i = 0; i < res.data.length; i++) {
+          let temp = res.data[i]
+          if (temp.repo === this.repo) {
+            this.repos = temp.public_repos
+            this.followers = temp.owner_followers
+            this.following = temp.owner_following
+          }
+        }
       })
     }
   }

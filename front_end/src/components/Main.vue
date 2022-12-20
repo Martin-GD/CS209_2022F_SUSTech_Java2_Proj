@@ -1,7 +1,8 @@
 <template>
   <div class="main">
     <div class="header">
-      <h2>This is java2 final project</h2>
+      <span style="font-size: 40px; font-weight: bold; border-radius: 15px;">This is java2 final project</span>
+      <!--      <h2>This is java2 final project</h2>-->
     </div>
     <div class="body">
       <section class="Left">
@@ -14,7 +15,7 @@
                   ref="repos">
           <el-table-column prop="repo" label="Repositories" style="font-size: 15px"></el-table-column>
         </el-table>
-        <div class="Buttons" style="margin-top: 50px; height: 400px">
+        <div class="Buttons" style="margin-top: 20px; height: 160px">
           <el-button type="primary" @click="devSelect" style="width: 200px">Developer Page</el-button>
           <el-button type="primary" @click="issueSelect"
                      style="width: 200px; margin-top: 20px; margin-left: 0px">Issues Page
@@ -22,6 +23,11 @@
           <el-button type="primary" @click="commitSelect"
                      style="width: 200px; margin-top: 20px; margin-left: 0px">Commits Page
           </el-button>
+        </div>
+        <div class="Crawler" style="height: 230px; width: 200px; margin-top: 40px; margin-left: 50px">
+          <el-input placeholder="user name" v-model="UserName"></el-input>
+          <el-input placeholder="repo name" v-model="RepoName" style="margin-top: 10px"></el-input>
+          <el-button type="success" @click="crawl" style="width: 180px; margin-top: 20px;">Crawl</el-button>
         </div>
       </section>
       <section class="Right">
@@ -55,7 +61,9 @@ export default {
       ],
       owner: 'Fndroid',
       repo: 'clash_for_windows_pkg',
-      componentName: 'DevPage'
+      componentName: 'DevPage',
+      UserName: '',
+      RepoName: ''
     }
   },
   components: {
@@ -64,27 +72,75 @@ export default {
     CommitPage
   },
   methods: {
+    crawl () {
+      this.$message({
+        message: 'crawling, please wait for the success massage',
+        type: 'success'
+      })
+      let url = `http://localhost:8181/Crawler_RepoOwner_Info?owner=${this.UserName}&repo=${this.RepoName}`
+      console.log(url)
+      axios.get(url).then(res => {
+        this.$message({
+          message: `repo ${res.data}`,
+          type: 'success'
+        })
+      })
+      url = `http://localhost:8181/repo_Info/commit/Crawler_Insert?owner=${this.UserName}&repo=${this.RepoName}`
+      console.log(url)
+      axios.get(url).then(res => {
+        this.$message({
+          message: `commit ${res.data}`,
+          type: 'success'
+        })
+      })
+      url = `http://localhost:8181/repo_Info/developer/Crawler_Insert?owner=${this.UserName}&repo=${this.RepoName}`
+      console.log(url)
+      axios.get(url).then(res => {
+        this.$message({
+          message: `developer ${res.data}`,
+          type: 'success'
+        })
+      })
+      url = `http://localhost:8181/repo_Info/issue/Crawler_Insert?owner=${this.UserName}&repo=${this.RepoName}`
+      console.log(url)
+      axios.get(url).then(res => {
+        this.$message({
+          message: `issue ${res.data}`,
+          type: 'success'
+        })
+      })
+      url = `http://localhost:8181/repo_Info/release/Crawler_Insert?owner=${this.UserName}&repo=${this.RepoName}`
+      console.log(url)
+      axios.get(url).then(res => {
+        this.$message({
+          message: `release ${res.data}`,
+          type: 'success'
+        })
+      })
+      this.UserName = ''
+      this.RepoName = ''
+    },
     devSelect () {
       this.componentName = 'DevPage'
-      this.$nextTick(() => {
-        this.setSubPage()
-      })
+      this.setSubPage()
     },
     issueSelect () {
       this.componentName = 'IssuePage'
-      this.$nextTick(() => {
-        this.setSubPage()
-      })
+      this.setSubPage()
     },
     commitSelect () {
       this.componentName = 'CommitPage'
-      this.$nextTick(() => {
-        this.setSubPage()
-      })
+      this.setSubPage()
     },
     handleRowClick (row) {
       this.repo = row.repo
       this.owner = row.owner
+      DevPage.data().repo = this.repo
+      DevPage.data().owner = this.owner
+      IssuePage.data().repo = this.repo
+      IssuePage.data().owner = this.owner
+      CommitPage.data().repo = this.repo
+      CommitPage.data().owner = this.owner
       this.setSubPage()
     },
     readRepo () {
