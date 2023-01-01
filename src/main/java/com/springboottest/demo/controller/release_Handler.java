@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-//token: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
-//token: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
 
 @RestController
 @RequestMapping("/repo_Info/release")
@@ -29,7 +27,6 @@ public class release_Handler {
 
   private String token = "token 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";
 
-//    private String token = "CS209A_Proj1 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";
 
   @SuppressWarnings("all")
   private final String topic_name = "release";
@@ -66,7 +63,6 @@ public class release_Handler {
 
   @GetMapping("/Crawler_Insert")
   public String Crawl_Insert(String owner, String repo) throws IOException {
-//        issue_info_repo.deleteAll();
     String owner_repo = owner + "_" + repo;
     Data_Crawl_URL = MessageFormat.format(Template, owner, repo);
     List<release> list = new ArrayList<>();
@@ -74,7 +70,6 @@ public class release_Handler {
     String url = Data_Crawl_URL + cnt;
 
     String json_String_Content = HttpUtil.createGet(url).header("Authorization", token).execute().body();
-//        String json_String_Content = Jsoup.connect(Data_Crawl_URL).ignoreContentType(true).get().text();
     do {
       JsonParser parser = new JsonParser();
       JsonElement element = parser.parse(json_String_Content);

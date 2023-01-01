@@ -25,9 +25,7 @@ public class AppHandler {
 
   private String Template = "https://api.github.com/users/{0}";
   private String Data_Crawl_URL = "";
-  //    private String token = "CS209A_Proj1 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";
   private String token = "token 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";
-//    private String token = "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";
 
   @Autowired
   private repo_contents_Repo repo_contents_repo;
@@ -42,7 +40,6 @@ public class AppHandler {
     String pri_key = owner + "_" + repo;
     List<repo_contents> list = new ArrayList<>();
     Data_Crawl_URL = MessageFormat.format(Template, owner);
-    HttpRequest httpRequest = HttpUtil.createGet(Data_Crawl_URL).header("Authorization", token);
     String json_String_Content = HttpUtil.createGet(Data_Crawl_URL).header("Authorization", token).execute().body();
     json_String_Content = "[" + json_String_Content + "]";
     JsonParser parser = new JsonParser();
